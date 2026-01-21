@@ -1,0 +1,79 @@
+name: Automatizar scripts de artistas
+
+on:
+  schedule:
+    - cron: "0 22 * * 2"   # Todos los martes a las 5:00 PM hora Colombia (21:00 UTC)
+  workflow_dispatch:
+
+jobs:
+  ejecutar-scripts:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: 📥 Clonar repositorio
+        uses: actions/checkout@v4
+
+      - name: 🐍 Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: 📦 Instalar dependencias
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          playwright install --with-deps
+
+      - name: 🔢 Crear carpeta incremental para PDFs
+        id: crear_carpeta
+        run: |
+          last_num=$(ls -d pdf_artistas* 2>/dev/null | grep -Eo '[0-9]+' | sort -n | tail -1)
+          if [ -z "$last_num" ]; then
+            next_num=1
+          else
+            next_num=$((last_num + 1))
+          fi
+
+          folder_name="pdf_artistas${next_num}"
+          mkdir -p "$folder_name"
+          echo "📁 Carpeta creada: $folder_name"
+          echo "FOLDER_NAME=$folder_name" >> $GITHUB_ENV
+
+      - name: ▶️ Ejecutar extract_info_artists.py
+        run: python extract_info_artists.py
+
+      - name: ▶️ Ejecutar extract_info_per_artist.py
+        run: python extract_info_per_artist.py
+
+      - name: 📊 Ejecutar plotting_info_artist.py
+        run: |
+          echo "Ejecutando plotting_info_artist.py con carpeta $FOLDER_NAME..."
+          python plotting_info_artist.py "$FOLDER_NAME"
+
+      - name: 🧾 Commit PDFs al repositorio
+        if: success()
+        run: |
+          echo "📤 Subiendo carpeta $FOLDER_NAME al repo..."
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add "$FOLDER_NAME" || true
+          git commit -m "📄 PDFs de artistas - $FOLDER_NAME" || echo "Sin cambios que subir"
+          git push || echo "⚠️ No se pudo hacer push (posiblemente sin permisos)"
+
+      - name: 📦 Subir PDFs como artefacto
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.FOLDER_NAME }}
+          path: ${{ env.FOLDER_NAME }}/
+
+      - name: 💾 Subir resultados (Excel, CSV, etc.)
+        uses: actions/upload-artifact@v4
+        with:
+          name: resultados
+          path: |
+            *.xlsx
+            *.csv
+            *.png
+            *.pdf
