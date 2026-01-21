@@ -66,7 +66,6 @@ El workflow automáticamente:
 - ✅ Guarda artefactos descargables
 
 
-```
 
 ## 📊 Datos Generados
 
