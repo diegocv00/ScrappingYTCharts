@@ -16,23 +16,6 @@ Automatiza la extracción de datos de [YouTube Charts Colombia](https://charts.y
 - Las dependencias listadas en `requirements.txt`
 - Git (para subir a GitHub)
 
-## ⚙️ Instalación Local
-
-```bash
-# Clonar el repositorio
-git clone <tu-repo>
-cd ScrappingYTCharts
-
-# Crear entorno virtual (opcional)
-python -m venv venv
-# En Windows
-venv\Scripts\activate
-# En Mac/Linux
-source venv/bin/activate
-
-# Instalar dependencias
-pip install -r requirements.txt
-playwright install chromium
 ```
 
 ## 🚀 Uso
@@ -72,11 +55,7 @@ El proyecto incluye un **workflow automático** que se ejecuta:
 - **Cada martes a las 5:00 PM (hora Colombia)**
 - **Manualmente**: GitHub → Actions → "Automatizar scripts de artistas" → "Run workflow"
 
-### ✅ Configuración necesaria en GitHub
 
-1. Ve a **Settings** → **Actions** → **General**
-2. En "Workflow permissions" selecciona **"Read and write permissions"**
-3. Guarda cambios
 
 El workflow automáticamente:
 - ✅ Clona el repo
@@ -86,33 +65,11 @@ El workflow automáticamente:
 - ✅ Sube PDFs al repositorio
 - ✅ Guarda artefactos descargables
 
-## 📁 Estructura del Proyecto
 
-```
-ScrappingYTCharts/
-├── extract_info_artists.py          # Extrae top 10 artistas
-├── extract_info_per_artist.py       # Extrae datos detallados por artista
-├── plotting_info_artist.py          # Genera PDFs con gráficos
-├── requirements.txt                 # Dependencias Python
-├── README.md                        # Este archivo
-├── .gitignore                       # Archivos a ignorar
-├── .github/
-│   └── workflows/
-│       └── scraping.yml             # Workflow de GitHub Actions
-├── top_colombia_weekly_artists.csv  # Top 10 artistas (generado)
-├── top10_artistas_detalle.xlsx      # Datos detallados (generado)
-└── pdf_artistas/                    # PDFs por artista (generado)
-    ├── pdf_artistas1/
-    ├── pdf_artistas2/
-    └── ...
 ```
 
 ## 📊 Datos Generados
 
-### top_colombia_weekly_artists.csv
-| top_position | name | weeks_in_top | weekly_views | url_tarjeta |
-|---|---|---|---|---|
-| 1 | Bad Bunny | 52 | 125M | https://... |
 
 ### top10_artistas_detalle.xlsx
 Múltiples hojas por artista:
@@ -134,20 +91,6 @@ PDFs con 3 gráficos por artista:
 - **XlsxWriter**: Generación de Excel
 - **GitHub Actions**: Automatización
 
-## 🐛 Solución de Problemas
-
-### Error: "invalid syntax" en pd.eval()
-✅ Ya está resuelto. El script usa una función robusta `convertir_visitas()` que maneja K/M sin errores.
-
-### GitHub Actions no ejecuta
-- ✅ Verifica que los permisos estén en "Read and write permissions"
-- ✅ Revisa la pestaña **Actions** para ver logs de errores
-
-### "Playwright no encuentra Chromium"
-```bash
-playwright install chromium
-```
-
 ## 📝 Notas
 
 - Los datos se extraen de YouTube Charts oficial
@@ -155,10 +98,3 @@ playwright install chromium
 - El script maneja automáticamente errores de conexión
 - Genera logs con ✅ y ⚠️ para seguimiento fácil
 
-## 📄 Licencia
-
-Uso personal - Respeta los términos de YouTube
-
-## 👨‍💻 Autor
-
-Proyecto de análisis de datos - Scraping YouTube Charts Colombia
